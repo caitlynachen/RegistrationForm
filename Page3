@@ -1,0 +1,124 @@
+<%@ page language="java" import="java.net.*, java.io.*"
+	contentType="text/html; charset=ISO-8859-1" session="true"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Page 3</title>
+</head>
+
+<%
+	String bank = request.getParameter("bank");
+	String account = request.getParameter("account");
+	if (bank != null && account != null) {
+		session.putValue("bank", bank);
+		session.putValue("account", account);
+	}
+
+	String ticker = request.getParameter("ticker");
+	String quantity = request.getParameter("quantity");
+	String action = request.getParameter("action");
+
+	boolean firstTime = ticker == null && quantity == null
+			&& action == null;
+	String reply = "";
+
+	if (ticker != null && quantity != null && action != null) {
+
+		String username = (String) session.getAttribute("username");
+		String password = (String) session.getAttribute("password");
+		String bankName = (String) session.getAttribute("bank");
+		String accountID = (String) session.getAttribute("account");
+
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("username=" + username + ";");
+		sb.append("password=" + password + ";");
+		sb.append("account=" + accountID + ";");
+		sb.append("ticker=" + ticker + ";");
+		sb.append("quantity=" + quantity + ";");
+		sb.append("action=" + action);
+
+		String requestMessage = sb.toString();
+		System.out.println(requestMessage);
+		
+		try {
+			Socket s = new Socket("192.168.1.2", 5454);
+			InputStream is = s.getInputStream();
+			OutputStream os = s.getOutputStream();
+
+			OutputStreamWriter osw = new OutputStreamWriter(os);
+			PrintWriter pw = new PrintWriter(osw);
+
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+
+			pw.println(requestMessage);
+			pw.flush();
+
+			reply = br.readLine();
+
+			pw.close();
+			br.close();
+			s.close();
+			
+		} catch (Exception e) {
+			reply = "false";
+		}
+	}
+%>
+
+
+<body>
+
+<br><br><br><br>
+
+<%
+if(firstTime){
+%>
+    Start making transaction request:
+<%
+}
+else if(reply.equals("true")){
+%>
+    Your request was successfully processed. Make another one:
+<%   
+}
+else {
+%>
+    Your previous request could not be processed. Try again:
+<%  
+}
+%>
+
+
+	<br>
+	<br>
+	<br>
+
+	<form method=get action="page3.jsp">
+
+		Stock: &nbsp; <select name="ticker">
+			<option value="">
+			<option value="AAPL">Apple
+			<option value="FB">Facebook
+			<option value="ORCL">Oracle
+			<option value="TWTR">Twitter
+			<option value="YHOO">Yahoo
+			<option value="GOOG">Google
+		</select> &nbsp; &nbsp; &nbsp; &nbsp; Quantity: <input type="text"
+			size=4 name="quantity"> &nbsp; &nbsp; &nbsp; &nbsp; Buy/Sell: &nbsp;
+		<select name="action">
+			<option value="">
+			<option value="buy">Buy
+			<option value="sell">Sell
+		</select> <br>
+		<br>
+		<br>
+		<br> <input type="submit" value="Submit">
+
+	</form>
+
+</body>
+</html>
