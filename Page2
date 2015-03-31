@@ -1,0 +1,32 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" session="true"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Page 2</title>
+</head>
+
+<%
+String username = request.getParameter("username");
+String password = request.getParameter("password");
+session.putValue("username", username);
+session.putValue("password", password);
+System.out.println(username+" , "+password);
+%>
+
+<body>
+
+<form method=get action="page3.jsp">
+
+Bank: <input type="text" name="bank"> <br><br>
+Account#: <input type="text" name="account"> <br><br><br><br>
+
+<input type="submit" value="Submit">
+
+</form>
+
+
+
+</body>
+</html>
